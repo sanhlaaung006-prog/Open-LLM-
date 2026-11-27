@@ -53,7 +53,8 @@ class ProviderStore(context: Context) {
         val result = ArrayList<Provider>(array.length())
         for (index in 0 until array.length()) {
             val json = array.optJSONObject(index) ?: continue
-            val id = json.optString("id").ifBlank { continue }
+            val id = json.optString("id")
+            if (id.isBlank()) continue
             val enabled = json.optBoolean("enabled", true)
             val custom = json.optBoolean("custom", false)
 
