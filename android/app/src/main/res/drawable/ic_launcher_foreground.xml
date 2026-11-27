@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Speech bubble -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M38,32 h32 a10,10 0 0 1 10,10 v14 a10,10 0 0 1 -10,10 h-16 l-12,12 v-12 h-4 a10,10 0 0 1 -10,-10 v-14 a10,10 0 0 1 10,-10 z" />
+    <!-- Three "models" -->
+    <path
+        android:fillColor="#FF4F46E5"
+        android:pathData="M42,44 m-4,0 a4,4 0 1 1 8,0 a4,4 0 1 1 -8,0" />
+    <path
+        android:fillColor="#FF4F46E5"
+        android:pathData="M54,44 m-4,0 a4,4 0 1 1 8,0 a4,4 0 1 1 -8,0" />
+    <path
+        android:fillColor="#FF4F46E5"
+        android:pathData="M66,44 m-4,0 a4,4 0 1 1 8,0 a4,4 0 1 1 -8,0" />
+</vector>
