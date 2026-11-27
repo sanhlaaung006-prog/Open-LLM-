@@ -14,6 +14,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      # AGP is allowed to fetch any missing SDK component; the runner image
+      # already ships the SDK and an accepted license set.
+      ANDROID_HOME: /usr/local/lib/android/sdk
 
     steps:
       - uses: actions/checkout@v4
@@ -24,8 +28,18 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Verify Android SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls -1 "$ANDROID_HOME" || true
+          echo "--- platforms:"; ls -1 "$ANDROID_HOME/platforms" 2>/dev/null || true
+          echo "--- build-tools:"; ls -1 "$ANDROID_HOME/build-tools" 2>/dev/null || true
+          if [ -x "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
+            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null 2>&1 || true
+            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
+              "platforms;android-34" "build-tools;34.0.0" >/dev/null 2>&1 || true
+          fi
+          test -d "$ANDROID_HOME" || { echo "::error::Android SDK missing"; exit 1; }
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -38,9 +52,7 @@ jobs:
 
       - name: Report APK
         working-directory: android
-        run: |
-          ls -lh app/build/outputs/apk/debug/
-          echo "APK_BUILD_OK"
+        run: ls -lh app/build/outputs/apk/debug/
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
