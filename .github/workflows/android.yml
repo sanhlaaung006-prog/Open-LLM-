@@ -14,6 +14,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: write
     env:
       # AGP is allowed to fetch any missing SDK component; the runner image
       # already ships the SDK and an accepted license set.
@@ -52,20 +54,38 @@ jobs:
           set -o pipefail
           gradle :app:assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
 
-      - name: Publish build errors to the run summary
+      - name: Publish build errors as a commit comment
         if: failure()
         run: |
-          {
-            echo "## Gradle output (filtered)"
-            echo '```'
-            grep -a -E "^e: |^w: .*error|error:|FAILURE|What went wrong|Caused by|> Task .* FAILED|Could not (resolve|find|download)" \
-              android/build.log 2>/dev/null | head -120 || echo "(no matching lines)"
-            echo '```'
-            echo "## Tail"
-            echo '```'
-            tail -40 android/build.log 2>/dev/null || echo "(no log)"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+          python3 - <<'PY'
+          import json, os, re, urllib.request
+
+          path = "android/build.log"
+          log = open(path, errors="replace").read() if os.path.exists(path) else ""
+          lines = log.splitlines()
+          pattern = re.compile(r"^(e: |FAILURE|What went wrong|Caused by|> Task .*FAILED)|error:|Could not (resolve|find|download)")
+          picked = [l for l in lines if pattern.search(l)][-90:]
+          body = "### Gradle build failed\n\n```\n" + "\n".join(picked or lines[-50:]) + "\n```\n"
+
+          repo = os.environ["GITHUB_REPOSITORY"]
+          sha = os.environ["GITHUB_SHA"]
+          req = urllib.request.Request(
+              f"https://api.github.com/repos/{repo}/commits/{sha}/comments",
+              data=json.dumps({"body": body[:65000]}).encode(),
+              headers={
+                  "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
+                  "Accept": "application/vnd.github+json",
+                  "Content-Type": "application/json",
+                  "User-Agent": "openllm-ci",
+              },
+              method="POST",
+          )
+          try:
+              urllib.request.urlopen(req, timeout=30)
+              print("comment posted")
+          except Exception as exc:  # noqa: BLE001
+              print("could not post comment:", exc)
+          PY
 
       - name: Report APK
         working-directory: android
