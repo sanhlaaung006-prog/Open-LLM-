@@ -56,6 +56,8 @@ jobs:
 
       - name: Publish build errors as a commit comment
         if: failure()
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           python3 - <<'PY'
           import json, os, re, urllib.request
@@ -65,7 +67,13 @@ jobs:
           lines = log.splitlines()
           pattern = re.compile(r"^(e: |FAILURE|What went wrong|Caused by|> Task .*FAILED)|error:|Could not (resolve|find|download)")
           picked = [l for l in lines if pattern.search(l)][-90:]
-          body = "### Gradle build failed\n\n```\n" + "\n".join(picked or lines[-50:]) + "\n```\n"
+          tail = lines[-60:]
+          detail = "\n".join(picked[:90]) if picked else "(no filtered lines)"
+          body = (
+              "### Gradle build failed\n\n"
+              "**Filtered**\n```\n" + detail + "\n```\n\n"
+              "**Tail**\n```\n" + "\n".join(tail) + "\n```\n"
+          )
 
           repo = os.environ["GITHUB_REPOSITORY"]
           sha = os.environ["GITHUB_SHA"]
