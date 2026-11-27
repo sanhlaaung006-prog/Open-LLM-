@@ -16,9 +16,9 @@ One prompt → every model you selected. Tabs keep their sessions and their
 in-flight replies, so you can compare ChatGPT, Claude, Gemini, Grok, Perplexity,
 Copilot, DeepSeek, Qwen, Kimi, Meta AI, Le Chat, Poe and You.com side by side.
 
-**Get the APK:** Actions → *android-apk* → newest run → download
-`OpenLLM-debug-apk`. Details, provider table and known limitations live in
-[`android/README.md`](android/README.md).
+**Get the APK:** [download `app-debug.apk` (v0.1.0)](https://github.com/sanhlaaung006-prog/Open-LLM-/releases/download/v0.1.0/app-debug.apk)
+— or grab it from Actions → *android-apk* → newest run. Details, provider table
+and known limitations live in [`android/README.md`](android/README.md).
 
 <table>
 <tr><td width="50%">

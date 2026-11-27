@@ -8,16 +8,23 @@ Kotlin + Jetpack Compose, one activity, one WebView per site.
 
 ## Get the APK
 
-The APK is built by GitHub Actions — no Android Studio needed.
+**Direct download (v0.1.0):**
+[`app-debug.apk`](https://github.com/sanhlaaung006-prog/Open-LLM-/releases/download/v0.1.0/app-debug.apk) — 8.8 MB.
 
-1. Open the **Actions** tab → **android-apk** → newest green run.
-2. Download the **OpenLLM-debug-apk** artifact (a zip containing `app-debug.apk`).
-3. On the phone, allow "install unknown apps" for your browser/file manager, then open the APK.
+Open that link on the phone, allow "install unknown apps" when Android asks, and
+install. It is a **debug build** (package `ai.openllm.launcher.debug`), so it can
+sit next to a future release build.
 
-Tagging a release also attaches the APK to the GitHub Release:
+Prefer building it yourself?
+
+- **CI:** Actions → **android-apk** → newest green run → download the
+  `OpenLLM-debug-apk` artifact (a zip containing `app-debug.apk`).
+- **Locally:** see below.
+
+Tagging a release attaches a fresh APK build to it:
 
 ```bash
-git tag v0.1.0 && git push origin v0.1.0
+git tag v0.1.1 && git push origin v0.1.1
 ```
 
 ### Build it yourself
